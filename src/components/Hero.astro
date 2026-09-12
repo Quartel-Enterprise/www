@@ -1,5 +1,8 @@
 <section class="hero relative isolate grid min-h-[clamp(36rem,75svh,50rem)] place-items-center overflow-clip px-[var(--page-gutter)] pb-28 pt-20" aria-labelledby="hero-title">
-  <div class="hero__atmosphere" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="hero__atmosphere" aria-hidden="true">
+    <div class="organic-fallback"><i></i><i></i><i></i></div>
+    <canvas id="organic-canvas"></canvas>
+  </div>
   <div class="relative z-10 mx-auto w-full max-w-4xl text-center">
     <h1 id="hero-title" class="font-display mx-auto max-w-[14ch] text-[clamp(3.35rem,7.2vw,6.5rem)] leading-[1.04] tracking-[-.055em]">
       Boas ideias.<br /><em class="font-normal">Na sua rotina.</em>
@@ -12,9 +15,13 @@
 <style>
   .hero__atmosphere { position: absolute; z-index: -1; top: -8rem; right: calc(var(--page-gutter) * -1); bottom: -3rem; left: calc(var(--page-gutter) * -1); overflow: hidden; opacity: .86; mask-image: radial-gradient(ellipse 65% 54% at 50% 47%, black 8%, rgb(0 0 0 / .8) 44%, transparent 100%); }
   .hero__atmosphere::before { position: absolute; inset: 8% 2% 4%; content: ''; background: radial-gradient(ellipse 48% 58% at 29% 55%, rgb(24 79 113 / .48), transparent 68%), radial-gradient(ellipse 47% 55% at 72% 42%, rgb(70 36 123 / .5), transparent 70%), radial-gradient(ellipse 40% 45% at 50% 62%, rgb(22 48 90 / .38), transparent 72%); filter: blur(2.3rem); }
-  .hero__atmosphere i { position: absolute; width: 50%; height: 57%; left: 4%; top: 23%; border-radius: 37% 63% 68% 32% / 51% 37% 63% 49%; background: rgb(34 105 142 / .14); filter: blur(4.2rem); animation: drift 18s ease-in-out infinite alternate; }
-  .hero__atmosphere i:nth-child(2) { right: 3%; left: auto; top: 18%; background: rgb(104 51 177 / .18); animation-duration: 22s; animation-direction: alternate-reverse; }
-  .hero__atmosphere i:nth-child(3) { left: 30%; top: 29%; width: 42%; background: rgb(40 95 157 / .12); animation-duration: 25s; }
+  #organic-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 300ms ease; }
+  .hero__atmosphere.shader-ready #organic-canvas { opacity: 1; }
+  .hero__atmosphere.shader-ready .organic-fallback { visibility: hidden; }
+  .organic-fallback { position: absolute; inset: 0; }
+  .organic-fallback i { position: absolute; width: 50%; height: 57%; left: 4%; top: 23%; border-radius: 37% 63% 68% 32% / 51% 37% 63% 49%; background: rgb(34 105 142 / .14); filter: blur(4.2rem); animation: drift 18s ease-in-out infinite alternate; }
+  .organic-fallback i:nth-child(2) { right: 3%; left: auto; top: 18%; background: rgb(104 51 177 / .18); animation-duration: 22s; animation-direction: alternate-reverse; }
+  .organic-fallback i:nth-child(3) { left: 30%; top: 29%; width: 42%; background: rgb(40 95 157 / .12); animation-duration: 25s; }
   @keyframes drift { from { transform: translate(-3%, 4%) rotate(-10deg) scale(.94); } to { transform: translate(8%, -5%) rotate(14deg) scale(1.08); } }
 
   @media (max-width: 37.5rem) {
@@ -22,3 +29,229 @@
     .hero__atmosphere { mask-image: radial-gradient(ellipse 86% 51% at 50% 48%, black 5%, rgb(0 0 0 / .8) 45%, transparent 100%); }
   }
 </style>
+
+<script>
+  (() => {
+    const canvas = document.querySelector<HTMLCanvasElement>('#organic-canvas');
+    const atmosphere = document.querySelector<HTMLElement>('.hero__atmosphere');
+    if (!canvas || !atmosphere) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const gl = canvas.getContext('webgl', {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      preserveDrawingBuffer: false,
+      powerPreference: 'low-power',
+    });
+    if (!gl) return;
+
+    const vertexSource = `
+      attribute vec2 a_position;
+      varying vec2 v_uv;
+      void main() {
+        v_uv = a_position * .5 + .5;
+        gl_Position = vec4(a_position, 0., 1.);
+      }
+    `;
+
+    const fragmentSource = `
+      #ifdef GL_FRAGMENT_PRECISION_HIGH
+      precision highp float;
+      #else
+      precision mediump float;
+      #endif
+
+      varying vec2 v_uv;
+      uniform float u_time;
+      uniform vec2 u_resolution;
+      uniform vec3 u_bg;
+      uniform vec3 u_cyan;
+      uniform vec3 u_violet;
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 137.345);
+      }
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3. - 2. * f);
+        return mix(
+          mix(hash(i), hash(i + vec2(1., 0.)), f.x),
+          mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), f.x),
+          f.y
+        );
+      }
+
+      float fbm(vec2 p) {
+        float n = 0.;
+        float a = .5;
+        for (int i = 0; i < 4; i++) {
+          n += a * noise(p);
+          p = mat2(.8, -.6, .6, .8) * p * 2.03 + vec2(3.7, 9.2);
+          a *= .5;
+        }
+        return n;
+      }
+
+      void main() {
+        vec2 uv = v_uv;
+        float t = u_time * .075;
+        vec2 p = (uv - .5) * vec2(u_resolution.x / u_resolution.y, 1.) * 2.;
+        vec2 warp = vec2(
+          fbm(p * .9 + vec2(t * .22, -t * .18)),
+          fbm(p * .9 + vec2(-t * .19, t * .21) + 4.2)
+        );
+        float flowA = fbm(p * 1.65 + warp * 2. + vec2(t * .14, -t * .12));
+        float flowB = fbm(vec2(-p.x, p.y) * 1.65 + warp.yx * 2. + vec2(-t * .13, t * .11) + 6.7);
+        float field = (flowA + flowB) * .5;
+        float body = smoothstep(.25, .68, field);
+        float fold = exp(-pow((field - .48) * 17., 2.));
+        float hue = .5 + .26 * sin(p.x * 1.65 + .65 * sin(p.y * 1.4 + t * .08));
+        vec3 tint = mix(u_cyan, u_violet, hue);
+        float density = .11 + body * .14 + fold * .08;
+        gl_FragColor = vec4(mix(u_bg, tint, density), 1.);
+      }
+    `;
+
+    let program: WebGLProgram | null = null;
+
+    try {
+      const compileShader = (type: number, source: string) => {
+        const shader = gl.createShader(type);
+        if (!shader) throw new Error('Não foi possível criar o shader.');
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          gl.deleteShader(shader);
+          throw new Error('Não foi possível compilar o shader.');
+        }
+        return shader;
+      };
+
+      const vertexShader = compileShader(gl.VERTEX_SHADER, vertexSource);
+      const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+      const linkedProgram = gl.createProgram();
+      if (!linkedProgram) throw new Error('Não foi possível criar o programa WebGL.');
+      program = linkedProgram;
+      gl.attachShader(linkedProgram, vertexShader);
+      gl.attachShader(linkedProgram, fragmentShader);
+      gl.linkProgram(linkedProgram);
+      gl.deleteShader(vertexShader);
+      gl.deleteShader(fragmentShader);
+      if (!gl.getProgramParameter(linkedProgram, gl.LINK_STATUS)) throw new Error('Não foi possível vincular o programa WebGL.');
+      gl.useProgram(linkedProgram);
+
+      const buffer = gl.createBuffer();
+      if (!buffer) throw new Error('Não foi possível criar o buffer WebGL.');
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      const position = gl.getAttribLocation(linkedProgram, 'a_position');
+      gl.enableVertexAttribArray(position);
+      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+      const swatch = document.createElement('canvas');
+      swatch.width = swatch.height = 1;
+      const context = swatch.getContext('2d', { willReadFrequently: true });
+      if (!context) throw new Error('Não foi possível converter a paleta.');
+      const palette = getComputedStyle(document.documentElement);
+      const uniforms = [
+        ['u_bg', '--color-page'],
+        ['u_cyan', '--color-cyan'],
+        ['u_violet', '--color-violet'],
+      ] as const;
+
+      uniforms.forEach(([uniform, token]) => {
+        context.fillStyle = palette.getPropertyValue(token).trim();
+        context.fillRect(0, 0, 1, 1);
+        const rgb = context.getImageData(0, 0, 1, 1).data;
+        gl.uniform3f(
+          gl.getUniformLocation(linkedProgram, uniform),
+          (rgb[0] ?? 0) / 255,
+          (rgb[1] ?? 0) / 255,
+          (rgb[2] ?? 0) / 255,
+        );
+      });
+    } catch {
+      if (program) gl.deleteProgram(program);
+      return;
+    }
+
+    if (!program) return;
+    const timeUniform = gl.getUniformLocation(program, 'u_time');
+    const sizeUniform = gl.getUniformLocation(program, 'u_resolution');
+    let frame = 0;
+    let lastFrame = 0;
+    let elapsed = 18;
+    let visible = true;
+    let contextLost = false;
+
+    const draw = () => {
+      if (contextLost) return;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(sizeUniform, canvas.width, canvas.height);
+      gl.uniform1f(timeUniform, elapsed);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+
+    const resize = () => {
+      const bounds = canvas.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
+      const pixelBudget = 1_250_000;
+      const ratio = Math.min(
+        window.devicePixelRatio || 1,
+        1.5,
+        Math.sqrt(pixelBudget / (bounds.width * bounds.height)),
+      );
+      const width = Math.max(1, Math.round(bounds.width * ratio));
+      const height = Math.max(1, Math.round(bounds.height * ratio));
+      if (canvas.width === width && canvas.height === height) return;
+      canvas.width = width;
+      canvas.height = height;
+      draw();
+    };
+
+    const shouldRun = () => !contextLost && visible && !document.hidden && !reducedMotion.matches;
+
+    const tick = (now: number) => {
+      frame = 0;
+      if (!shouldRun()) return;
+      if (!lastFrame) lastFrame = now;
+      if (now - lastFrame >= 1000 / 30) {
+        elapsed += Math.min((now - lastFrame) / 1000, .1);
+        lastFrame = now;
+        draw();
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    const syncAnimation = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      lastFrame = 0;
+      if (shouldRun()) frame = requestAnimationFrame(tick);
+    };
+
+    resize();
+    atmosphere.classList.add('shader-ready');
+    syncAnimation();
+    document.addEventListener('visibilitychange', syncAnimation);
+    reducedMotion.addEventListener('change', syncAnimation);
+
+    new ResizeObserver(resize).observe(canvas);
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        visible = entry?.isIntersecting ?? false;
+        syncAnimation();
+      }).observe(atmosphere);
+    }
+
+    canvas.addEventListener('webglcontextlost', () => {
+      contextLost = true;
+      cancelAnimationFrame(frame);
+      atmosphere.classList.remove('shader-ready');
+    });
+  })();
+</script>

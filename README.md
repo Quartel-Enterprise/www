@@ -36,4 +36,4 @@ src/
 └── styles/       Design tokens e base do Tailwind
 ```
 
-A página entrega todo o conteúdo no HTML inicial. O JavaScript no cliente é usado somente para o acordeão de produtos, as prévias interativas e o diálogo de detalhes.
+A página entrega todo o conteúdo no HTML inicial. O JavaScript no cliente é usado para o shader WebGL progressivo do hero, o acordeão de produtos, as prévias interativas e o diálogo de detalhes. Navegadores sem WebGL recebem automaticamente a atmosfera em CSS.
