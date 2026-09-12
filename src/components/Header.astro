@@ -1,0 +1,18 @@
+---
+import Brand from './Brand.astro';
+---
+
+<header class="relative z-20 px-[var(--page-gutter)] pt-6 max-sm:pt-4">
+  <nav class="mx-auto flex min-h-18 w-full max-w-[65rem] items-center justify-between gap-6 px-6 py-2 max-sm:min-h-16 max-sm:gap-3 max-sm:px-2" aria-label="Navegação principal">
+    <a class="rounded-sm" href="#inicio" aria-label="Quare Software, início"><Brand /></a>
+    <div class="flex items-center gap-8 text-[.8rem] max-sm:gap-4 max-sm:text-[.68rem]">
+      <a class="nav-link" href="#cultura">A Quare</a>
+      <a class="nav-link" href="#solucoes"><span class="max-[28rem]:hidden">Nossos </span>produtos</a>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .nav-link { display: inline-flex; min-height: 2.75rem; align-items: center; color: color-mix(in oklch, var(--color-paper) 72%, transparent); text-underline-offset: .35rem; transition: color 180ms ease; }
+  .nav-link:hover { color: var(--color-paper); text-decoration: underline; }
+</style>

@@ -1,0 +1,224 @@
+---
+import ProductDemo from './ProductDemo.astro';
+
+const products = [
+  {
+    id: 'bora', number: '01', name: 'Bora Rachar', type: 'Contas compartilhadas',
+    statement: 'A conta é de todos.|A organização também.',
+    description: 'Divida despesas e acompanhe a parte de cada pessoa.', action: 'Conhecer o Bora Rachar',
+    dialogDescription: 'Organize a divisão das contas sem perder de vista quem precisa pagar o quê.',
+    features: 'Divida despesas de casa, mercado e restaurante.|Consulte os métodos de pagamento definidos pelo criador da conta.|Acompanhe a parte de cada participante.',
+    availability: 'O link para acessar o Bora Rachar ainda não está disponível nesta página.', open: true,
+  },
+  {
+    id: 'bible', number: '02', name: 'Bible Planner', type: 'Planejamento bíblico',
+    statement: 'Uma leitura por vez.|No seu ritmo.',
+    description: 'Planeje sua leitura da Bíblia e acompanhe seu progresso.', action: 'Conhecer o Bible Planner',
+    dialogDescription: 'Um planner para organizar a leitura da Bíblia e acompanhar sua jornada.',
+    features: 'Planeje sua leitura de acordo com o seu ritmo.|Acompanhe os capítulos lidos.|Organize sua rotina de leitura.',
+    availability: 'O link para acessar o Bible Planner ainda não está disponível nesta página.', open: false,
+  },
+  {
+    id: 'suple', number: '03', name: 'Suple Market', type: 'Em desenvolvimento',
+    statement: 'Compare primeiro.|Escolha com clareza.',
+    description: 'Suplementos, marcas e lojas em uma mesma comparação.', action: 'Conhecer o projeto',
+    dialogDescription: 'Um comparador de suplementos para ajudar você a avaliar as opções antes de escolher.',
+    features: 'Compare suplementos e marcas.|Consulte opções em diferentes lojas.|Avalie o custo-benefício lado a lado.',
+    availability: 'O Suple Market está em desenvolvimento. O acesso será disponibilizado no lançamento.', open: false,
+  },
+] as const;
+---
+
+<section id="solucoes" class="products px-[var(--page-gutter)] py-36 sm:py-44 lg:py-48" aria-labelledby="products-title">
+  <div class="mx-auto w-full max-w-[77.5rem]">
+    <div class="mb-10 flex items-end justify-between gap-5 sm:mb-14">
+      <h2 id="products-title" class="font-display text-[clamp(2.3rem,4.5vw,3.5rem)] leading-[1.08] tracking-[-.035em]">Encontre sua solução.</h2>
+      <span class="font-mono text-[.62rem] tracking-[.13em] text-muted max-sm:hidden" aria-hidden="true">Portfólio</span>
+    </div>
+
+    <div class="grid gap-4" data-product-list>
+      {
+        products.map((product) => (
+          <article class:list={["product-entry", { "is-open": product.open }]}>
+            <h3>
+              <button class="entry-toggle" id={`toggle-${product.id}`} type="button" aria-expanded={product.open ? 'true' : 'false'} aria-controls={`panel-${product.id}`}>
+                <span class="num text-[.7rem] text-muted">{product.number}</span>
+                <span class="font-display truncate text-[clamp(1.85rem,3.3vw,2.9rem)] leading-[1.15] tracking-[-.035em]">{product.name}</span>
+                <span class="text-xs font-normal text-muted max-sm:hidden">{product.type}</span>
+                <span class="entry-sign" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 5 5 5-5"></path></svg></span>
+              </button>
+            </h3>
+            <div class="entry-content" id={`panel-${product.id}`} role="region" aria-labelledby={`toggle-${product.id}`} hidden={!product.open}>
+              <div class="min-w-0">
+                <p class="mb-4 text-[clamp(1.18rem,1.8vw,1.5rem)] font-medium leading-[1.4] tracking-[-.025em]">
+                  {product.statement.split('|').map((line) => <>{line}<br /></>)}
+                </p>
+                <p class="mb-7 max-w-[31ch] text-sm leading-[1.65] text-muted">{product.description}</p>
+                <button
+                  class="button button--secondary product-action" type="button" aria-haspopup="dialog"
+                  data-name={product.name} data-category={product.type} data-description={product.dialogDescription}
+                  data-features={product.features} data-availability={product.availability}
+                >{product.action} <span aria-hidden="true">→</span></button>
+              </div>
+              <ProductDemo product={product.id} />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<dialog id="product-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+  <div class="mb-5 flex items-center justify-between gap-5">
+    <p id="dialog-category" class="font-mono text-[.68rem] uppercase tracking-[.13em] text-muted">Produto Quare</p>
+    <button class="dialog-close" type="button" aria-label="Fechar detalhes">×</button>
+  </div>
+  <h2 id="dialog-title" class="font-display text-[clamp(2.25rem,5vw,3rem)] tracking-[-.035em]">Produto</h2>
+  <p id="dialog-description" class="mt-4 text-muted"></p>
+  <ul id="dialog-features" class="my-6 list-disc space-y-2 pl-5 text-muted"></ul>
+  <p id="dialog-availability" class="border-t border-line pt-5 text-muted"></p>
+</dialog>
+
+<script>
+  const list = document.querySelector<HTMLElement>('[data-product-list]');
+  const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('.entry-toggle'));
+
+  const setEntryState = (toggle: HTMLButtonElement, expanded: boolean) => {
+    const panelId = toggle.getAttribute('aria-controls');
+    const panel = panelId ? document.getElementById(panelId) : null;
+    toggle.setAttribute('aria-expanded', String(expanded));
+    if (panel) panel.hidden = !expanded;
+    toggle.closest('.product-entry')?.classList.toggle('is-open', expanded);
+  };
+
+  toggles.forEach((toggle, index) => {
+    toggle.addEventListener('click', () => {
+      const shouldOpen = toggle.getAttribute('aria-expanded') !== 'true';
+      toggles.forEach((item) => setEntryState(item, item === toggle && shouldOpen));
+    });
+    toggle.addEventListener('keydown', (event) => {
+      const targets: Record<string, number> = {
+        ArrowDown: (index + 1) % toggles.length,
+        ArrowUp: (index + toggles.length - 1) % toggles.length,
+        Home: 0,
+        End: toggles.length - 1,
+      };
+      const target = targets[event.key];
+      if (target !== undefined) {
+        event.preventDefault();
+        toggles[target]?.focus({ preventScroll: true });
+      }
+    });
+  });
+
+  const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const peopleOutput = document.querySelector<HTMLOutputElement>('#people-count');
+  const shareOutput = document.querySelector<HTMLOutputElement>('#person-share');
+  const minusButton = document.querySelector<HTMLButtonElement>('#people-minus');
+  const plusButton = document.querySelector<HTMLButtonElement>('#people-plus');
+  let people = 6;
+  const updatePeople = (change: number) => {
+    people = Math.max(2, Math.min(12, people + change));
+    if (peopleOutput) peopleOutput.value = String(people);
+    if (shareOutput) shareOutput.value = money.format(240 / people);
+    if (minusButton) minusButton.disabled = people === 2;
+    if (plusButton) plusButton.disabled = people === 12;
+  };
+  minusButton?.addEventListener('click', () => updatePeople(-1));
+  plusButton?.addEventListener('click', () => updatePeople(1));
+
+  const readingToggle = document.querySelector<HTMLInputElement>('#reading-done');
+  readingToggle?.addEventListener('change', () => {
+    const count = readingToggle.checked ? 4 : 3;
+    const readingCount = document.querySelector<HTMLOutputElement>('#reading-count');
+    const readingProgress = document.querySelector<HTMLProgressElement>('#reading-progress');
+    const todayDot = document.querySelector<HTMLElement>('#today-dot');
+    const weekTrack = document.querySelector<HTMLElement>('#week-track');
+    const readingLabel = document.querySelector<HTMLElement>('#reading-label');
+    if (readingCount) readingCount.value = `${count} / 7`;
+    if (readingProgress) readingProgress.value = count;
+    todayDot?.classList.toggle('complete', readingToggle.checked);
+    weekTrack?.setAttribute('aria-label', readingToggle.checked ? 'Quatro dias concluídos' : 'Três dias concluídos');
+    if (readingLabel) readingLabel.textContent = readingToggle.checked ? 'Leitura concluída' : 'Marcar como lida';
+  });
+
+  const samples = [{ key: 'a', price: 90, totalProtein: 720 }, { key: 'b', price: 72, totalProtein: 360 }] as const;
+  const unitSelect = document.querySelector<HTMLSelectElement>('#compare-unit');
+  const updateComparison = () => {
+    const grams = unitSelect?.value === '25' ? 25 : 1;
+    const formatter = grams === 1
+      ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 3, maximumFractionDigits: 3 })
+      : money;
+    const comparisons = samples.map((sample) => ({ ...sample, cost: sample.price / sample.totalProtein * grams }));
+    const highest = Math.max(...comparisons.map((item) => item.cost));
+    comparisons.forEach((item) => {
+      const output = document.querySelector<HTMLOutputElement>(`#compare-price-${item.key}`);
+      const bar = document.querySelector<HTMLElement>(`#protein-bar-${item.key}`);
+      if (output) output.value = formatter.format(item.cost);
+      if (bar) bar.style.width = `${item.cost / highest * 100}%`;
+    });
+  };
+  unitSelect?.addEventListener('change', updateComparison);
+
+  const dialog = document.querySelector<HTMLDialogElement>('#product-dialog');
+  const closeDialog = document.querySelector<HTMLButtonElement>('.dialog-close');
+  let dialogOpener: HTMLButtonElement | null = null;
+  list?.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('.product-action') : null;
+    if (!target || !dialog) return;
+    dialogOpener = target;
+    const title = dialog.querySelector<HTMLElement>('#dialog-title');
+    const category = dialog.querySelector<HTMLElement>('#dialog-category');
+    const description = dialog.querySelector<HTMLElement>('#dialog-description');
+    const features = dialog.querySelector<HTMLUListElement>('#dialog-features');
+    const availability = dialog.querySelector<HTMLElement>('#dialog-availability');
+    if (title) title.textContent = target.dataset.name ?? '';
+    if (category) category.textContent = target.dataset.category ?? '';
+    if (description) description.textContent = target.dataset.description ?? '';
+    if (availability) availability.textContent = target.dataset.availability ?? '';
+    if (features) {
+      const items = (target.dataset.features ?? '').split('|').filter(Boolean);
+      features.replaceChildren(...items.map((text) => Object.assign(document.createElement('li'), { textContent: text })));
+    }
+    dialog.showModal();
+    document.body.classList.add('dialog-open');
+  });
+  closeDialog?.addEventListener('click', () => dialog?.close());
+  dialog?.addEventListener('click', (event) => {
+    if (event.target !== dialog) return;
+    const box = dialog.getBoundingClientRect();
+    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+  });
+  dialog?.addEventListener('close', () => {
+    document.body.classList.remove('dialog-open');
+    dialogOpener?.focus({ preventScroll: true });
+  });
+</script>
+
+<style>
+  .product-entry { overflow: clip; border-radius: 1rem; background: transparent; transition: background-color 180ms ease; }
+  .product-entry.is-open { background: color-mix(in oklch, var(--color-paper) 2.5%, var(--color-page)); }
+  .entry-toggle { display: grid; width: 100%; grid-template-columns: 3.25rem minmax(0, 1fr) 12.5rem 2.75rem; align-items: center; gap: 1.5rem; border: 0; border-radius: 1rem; background: transparent; padding: 2.05rem 1.25rem; color: var(--color-paper); text-align: left; transition: background-color 180ms ease; }
+  .entry-toggle:hover { background: color-mix(in oklch, var(--color-paper) 4%, var(--color-page)); }
+  .entry-sign { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; }
+  .entry-sign svg { width: 1.25rem; height: 1.25rem; transition: transform 180ms ease; }
+  .entry-toggle[aria-expanded='true'] .entry-sign svg { transform: rotate(180deg); }
+  .entry-content { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.65fr); align-items: center; gap: 3.5rem; padding: 1.6rem 1.25rem 4.1rem 6rem; }
+  .entry-content[hidden] { display: none; }
+  dialog { width: min(33.75rem, calc(100% - 2rem)); max-height: calc(100dvh - 2.5rem); overflow: auto; border: 1px solid var(--color-line); border-radius: 1.35rem; background: var(--color-surface); padding: 2rem; color: var(--color-paper); }
+  dialog::backdrop { background: rgb(8 8 14 / .86); backdrop-filter: blur(.5rem); }
+  .dialog-close { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border: 1px solid var(--color-line); border-radius: 50%; background: transparent; color: var(--color-paper); font-size: 1.5rem; }
+  .dialog-close:hover { border-color: var(--color-paper); background: var(--color-page); }
+
+  @media (max-width: 57.5rem) {
+    .entry-toggle { grid-template-columns: 2.25rem minmax(0, 1fr) 10.25rem 2.75rem; gap: 1.1rem; }
+    .entry-content { grid-template-columns: 1fr; gap: 1.75rem; padding-left: 4.6rem; }
+  }
+  @media (max-width: 37.5rem) {
+    .entry-toggle { grid-template-columns: 1.5rem minmax(0, 1fr) 2.25rem; gap: .75rem; padding: 1.55rem 0; }
+    .entry-sign { width: 2.25rem; height: 2.25rem; }
+    .entry-content { grid-template-columns: 1fr; gap: 1.55rem; padding: 0 0 2.2rem; }
+    dialog { padding: 1.5rem; }
+  }
+</style>

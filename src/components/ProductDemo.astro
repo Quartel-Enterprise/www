@@ -1,0 +1,163 @@
+---
+interface Props {
+  product: 'bora' | 'bible' | 'suple';
+}
+
+const { product } = Astro.props;
+---
+
+{
+  product === 'bora' && (
+    <div class="demo-wrap">
+      <div class="app-window">
+        <div class="app-toolbar">
+          <strong>Bora Rachar</strong><span>Conta compartilhada</span><span class="ml-auto tracking-[.18em] text-muted" aria-hidden="true">•••</span>
+        </div>
+        <div class="split-app">
+          <div class="app-panel border-b border-line sm:border-r sm:border-b-0">
+            <span class="app-overline">Churrasco de sábado</span>
+            <strong class="app-total num">R$ 240,00</strong>
+            <span class="app-subtle">Valor total da conta</span>
+            <div class="mt-9 flex flex-wrap items-center justify-between gap-3 text-[.68rem]">
+              <span>Pessoas</span>
+              <div class="stepper">
+                <button type="button" id="people-minus" aria-label="Diminuir número de pessoas">−</button>
+                <output id="people-count" class="num" aria-live="polite">6</output>
+                <button type="button" id="people-plus" aria-label="Aumentar número de pessoas">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="app-panel app-result">
+            <span class="app-overline">Média por pessoa</span>
+            <output id="person-share" class="share-amount num" aria-live="polite">R$ 40,00</output>
+            <div class="participant-list">
+              <div><span class="avatar">A</span><span>Ana</span><span class="status">Pago</span></div>
+              <div><span class="avatar">B</span><span>Bruno</span><span class="status">Pendente</span></div>
+              <div><span class="avatar">C</span><span>Carla</span><span class="status">Pendente</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-caption"><span>Prévia interativa · dados demonstrativos</span><span>Experimente dividir a conta</span></p>
+    </div>
+  )
+}
+
+{
+  product === 'bible' && (
+    <div class="demo-wrap">
+      <div class="app-window">
+        <div class="app-toolbar">
+          <strong>Bible Planner</strong><span>Meu plano</span><span class="ml-auto tracking-[.18em] text-muted" aria-hidden="true">•••</span>
+        </div>
+        <div class="reading-app">
+          <span class="app-overline">Sua semana de leitura</span>
+          <div class="week-track" id="week-track" aria-label="Três dias concluídos">
+            <span class="complete">S</span><span class="complete">T</span><span class="complete">Q</span><span id="today-dot">Q</span><span>S</span><span>S</span><span>D</span>
+          </div>
+          <div class="mt-6 mb-2.5 flex justify-between gap-4 text-[.64rem] text-muted">
+            <span>Progresso da semana</span><output id="reading-count" class="num">3 / 7</output>
+          </div>
+          <progress id="reading-progress" max="7" value="3" aria-label="Progresso semanal">3 de 7</progress>
+          <div class="today-reading">
+            <div>
+              <span class="app-overline">Leitura de hoje</span>
+              <p class="font-display my-1 text-[1.6rem]">Salmo 91</p>
+              <span class="app-subtle">Um momento para a sua leitura.</span>
+            </div>
+            <label class="reading-check"><input type="checkbox" id="reading-done" /><span id="reading-label">Marcar como lida</span></label>
+          </div>
+        </div>
+      </div>
+      <p class="demo-caption"><span>Prévia interativa · plano demonstrativo</span><span>Acompanhe sua leitura</span></p>
+    </div>
+  )
+}
+
+{
+  product === 'suple' && (
+    <div class="demo-wrap">
+      <div class="app-window">
+        <div class="app-toolbar">
+          <strong>Suple Market</strong><span>Comparador</span><span class="ml-auto tracking-[.18em] text-muted" aria-hidden="true">•••</span>
+        </div>
+        <div class="compare-app">
+          <div class="compare-heading">
+            <span class="app-overline">Compare o custo da proteína.</span>
+            <label class="unit-control">Preço por <select id="compare-unit"><option value="1">1 g de proteína</option><option value="25">25 g de proteína</option></select></label>
+          </div>
+          <div class="compare-option">
+            <div><strong>Opção A</strong><span class="app-subtle">900 g · R$ 90,00</span><span class="app-subtle">24 g de proteína por porção de 30 g</span></div>
+            <output class="num" id="compare-price-a">R$ 0,125</output>
+          </div>
+          <div class="cost-track"><i id="protein-bar-a" style="width:62.5%"></i></div>
+          <div class="compare-option">
+            <div><strong>Opção B</strong><span class="app-subtle">600 g · R$ 72,00</span><span class="app-subtle">18 g de proteína por porção de 30 g</span></div>
+            <output class="num" id="compare-price-b">R$ 0,200</output>
+          </div>
+          <div class="cost-track"><i id="protein-bar-b" style="width:100%"></i></div>
+          <p class="mt-5 mb-0 text-[.62rem] text-muted">Valores e composições fictícios para demonstração.</p>
+        </div>
+      </div>
+      <p class="demo-caption"><span>Conceito interativo · em desenvolvimento</span><span>Custo por grama de proteína</span></p>
+    </div>
+  )
+}
+
+<style>
+  .demo-wrap { min-width: 0; }
+  .app-window { overflow: hidden; border: 1px solid color-mix(in oklch, var(--color-paper) 18%, var(--color-page)); border-radius: .9rem; background: var(--color-surface); box-shadow: 0 1.15rem 2.5rem rgb(0 0 0 / .18); }
+  .app-toolbar { display: flex; min-height: 3.35rem; align-items: center; gap: 1.15rem; border-bottom: 1px solid var(--color-line); padding: .95rem 1.35rem; color: var(--color-muted); font-size: .63rem; }
+  .app-toolbar strong { color: var(--color-paper); font-size: .74rem; font-weight: 600; }
+  .app-toolbar > span:nth-child(2) { border-left: 1px solid var(--color-line); padding-left: 1.15rem; }
+  .split-app { display: grid; grid-template-columns: 1fr 1fr; }
+  .app-panel { min-width: 0; padding: 1.8rem 1.5rem; }
+  .app-overline, .app-subtle { display: block; color: var(--color-muted); font-size: .66rem; line-height: 1.5; }
+  .app-total { display: block; margin: .75rem 0 .5rem; font-size: clamp(1.5rem, 2.15vw, 1.9rem); font-weight: 500; letter-spacing: -.05em; }
+  .stepper { display: flex; align-items: center; border: 1px solid var(--color-line); border-radius: .45rem; }
+  .stepper button { width: 2.75rem; height: 2.75rem; border: 0; border-radius: .4rem; background: transparent; color: var(--color-paper); font-size: 1rem; }
+  .stepper button:hover:not(:disabled) { background: var(--color-page); }
+  .stepper button:disabled { cursor: default; opacity: .3; }
+  .stepper output { min-width: 1.5rem; text-align: center; }
+  .share-amount { display: block; margin-top: .75rem; font-size: 1.7rem; letter-spacing: -.05em; }
+  .participant-list { margin-top: 1.2rem; }
+  .participant-list > div { display: flex; align-items: center; gap: .55rem; padding-block: .45rem; font-size: .62rem; }
+  .avatar { display: grid; width: 1.45rem; height: 1.45rem; place-items: center; border: 1px solid var(--color-line); border-radius: 50%; font-family: var(--font-mono); font-size: .55rem; }
+  .status { margin-left: auto; color: var(--color-muted); font-size: .56rem; }
+  .demo-caption { display: flex; justify-content: space-between; gap: .5rem 1rem; margin: .9rem 0 0; color: var(--color-muted); font-family: var(--font-mono); font-size: .56rem; }
+  .demo-caption span:last-child { font-family: var(--font-sans); }
+  .reading-app, .compare-app { padding: 1.6rem; }
+  .week-track { display: flex; justify-content: space-between; gap: .6rem; margin-top: 1.25rem; }
+  .week-track span { display: grid; width: 2.2rem; height: 2.2rem; place-items: center; border: 1px solid var(--color-line); border-radius: 50%; font-size: .68rem; }
+  .week-track .complete { border-color: var(--color-paper); background: var(--color-paper); color: var(--color-page); }
+  progress { display: block; width: 100%; height: .25rem; appearance: none; border: 0; border-radius: 1rem; background: var(--color-line); }
+  progress::-webkit-progress-bar { border-radius: 1rem; background: var(--color-line); }
+  progress::-webkit-progress-value, progress::-moz-progress-bar { border-radius: 1rem; background: var(--color-paper); }
+  .today-reading { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding-top: 1.6rem; }
+  .reading-check { display: flex; min-height: 2.75rem; cursor: pointer; align-items: center; gap: .65rem; border: 1px solid var(--color-line); border-radius: .45rem; padding: .65rem .75rem; font-size: .68rem; }
+  .reading-check:hover { border-color: var(--color-paper); background: var(--color-page); }
+  .reading-check input { width: 1rem; height: 1rem; accent-color: var(--color-paper); }
+  .compare-heading, .compare-option { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .unit-control { display: flex; align-items: center; gap: .5rem; color: var(--color-muted); font-size: .62rem; }
+  .unit-control select { min-height: 2.75rem; border: 1px solid var(--color-line); border-radius: .4rem; background: var(--color-page); color: var(--color-paper); padding: .5rem; font: inherit; }
+  .compare-option { margin-top: 1.25rem; }
+  .compare-option strong { font-size: .8rem; font-weight: 500; }
+  .compare-option output { flex: none; font-size: 1.3rem; letter-spacing: -.03em; }
+  .cost-track { height: .25rem; margin-top: .85rem; border-radius: 1rem; background: var(--color-line); }
+  .cost-track i { display: block; height: 100%; border-radius: inherit; background: var(--color-paper); }
+
+  @media (max-width: 37.5rem) {
+    .split-app { grid-template-columns: 1fr; }
+    .app-panel { padding: 1.3rem 1rem; }
+    .app-result { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .85rem; align-items: start; }
+    .participant-list { grid-column: 2; grid-row: 1 / 4; margin-top: 0; }
+    .avatar { display: none; }
+    .reading-app, .compare-app { padding: 1.25rem 1rem; }
+    .week-track { gap: .25rem; }
+    .week-track span { width: 1.8rem; height: 1.8rem; font-size: .6rem; }
+    .today-reading, .compare-heading { flex-wrap: wrap; }
+    .reading-check { width: 100%; justify-content: center; }
+    .demo-caption { font-size: .5rem; }
+    .demo-caption span:last-child { display: none; }
+  }
+</style>

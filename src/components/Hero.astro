@@ -1,0 +1,24 @@
+<section class="hero relative isolate grid min-h-[clamp(36rem,75svh,50rem)] place-items-center px-[var(--page-gutter)] pb-28 pt-20" aria-labelledby="hero-title">
+  <div class="hero__atmosphere" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="relative z-10 mx-auto w-full max-w-4xl text-center">
+    <h1 id="hero-title" class="font-display mx-auto max-w-[14ch] text-[clamp(3.35rem,7.2vw,6.5rem)] leading-[1.04] tracking-[-.055em]">
+      Boas ideias.<br /><em class="font-normal">Na sua rotina.</em>
+    </h1>
+    <p class="mx-auto mt-4 max-w-[36ch] text-[clamp(1rem,1.7vw,1.125rem)] text-muted">Conheça os nossos aplicativos e plataformas.</p>
+    <a class="button button--primary mt-8" href="#solucoes">Explore os produtos <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<style>
+  .hero__atmosphere { position: absolute; z-index: -1; top: -8rem; right: calc(var(--page-gutter) * -1); bottom: -3rem; left: calc(var(--page-gutter) * -1); overflow: hidden; opacity: .86; mask-image: radial-gradient(ellipse 65% 54% at 50% 47%, black 8%, rgb(0 0 0 / .8) 44%, transparent 100%); }
+  .hero__atmosphere::before { position: absolute; inset: 8% 2% 4%; content: ''; background: radial-gradient(ellipse 48% 58% at 29% 55%, rgb(24 79 113 / .48), transparent 68%), radial-gradient(ellipse 47% 55% at 72% 42%, rgb(70 36 123 / .5), transparent 70%), radial-gradient(ellipse 40% 45% at 50% 62%, rgb(22 48 90 / .38), transparent 72%); filter: blur(2.3rem); }
+  .hero__atmosphere i { position: absolute; width: 50%; height: 57%; left: 4%; top: 23%; border-radius: 37% 63% 68% 32% / 51% 37% 63% 49%; background: rgb(34 105 142 / .14); filter: blur(4.2rem); animation: drift 18s ease-in-out infinite alternate; }
+  .hero__atmosphere i:nth-child(2) { right: 3%; left: auto; top: 18%; background: rgb(104 51 177 / .18); animation-duration: 22s; animation-direction: alternate-reverse; }
+  .hero__atmosphere i:nth-child(3) { left: 30%; top: 29%; width: 42%; background: rgb(40 95 157 / .12); animation-duration: 25s; }
+  @keyframes drift { from { transform: translate(-3%, 4%) rotate(-10deg) scale(.94); } to { transform: translate(8%, -5%) rotate(14deg) scale(1.08); } }
+
+  @media (max-width: 37.5rem) {
+    .hero { min-height: clamp(32rem, 72svh, 42rem); padding-top: 4rem; padding-bottom: 6.5rem; }
+    .hero__atmosphere { mask-image: radial-gradient(ellipse 86% 51% at 50% 48%, black 5%, rgb(0 0 0 / .8) 45%, transparent 100%); }
+  }
+</style>
