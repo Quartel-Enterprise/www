@@ -41,7 +41,7 @@ const products = [
               <button class="entry-toggle" id={`toggle-${product.id}`} type="button" aria-expanded={product.open ? 'true' : 'false'} aria-controls={`panel-${product.id}`}>
                 <span class="num text-[.7rem] text-muted">{product.number}</span>
                 <span class="font-display truncate text-[clamp(1.85rem,3.3vw,2.9rem)] leading-[1.15] tracking-[-.035em]">{product.name}</span>
-                <span class="text-xs font-normal text-muted max-sm:hidden">{product.type}</span>
+                <span class="entry-type text-xs font-normal text-muted">{product.type}</span>
                 <span class="entry-sign" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 5 5 5-5"></path></svg></span>
               </button>
             </h3>
@@ -176,8 +176,9 @@ const products = [
     .entry-toggle { grid-template-columns: 2.25rem minmax(0, 1fr) 10.25rem 2.75rem; gap: 1.1rem; }
     .entry-content { grid-template-columns: 1fr; gap: 1.75rem; padding-left: 4.6rem; }
   }
-  @media (max-width: 37.5rem) {
+  @media (max-width: 40rem) {
     .entry-toggle { grid-template-columns: 1.5rem minmax(0, 1fr) 2.25rem; gap: .75rem; padding: 1.55rem 1rem; }
+    .entry-type { display: none; }
     .entry-sign { width: 2.25rem; height: 2.25rem; }
     .entry-content { grid-template-columns: 1fr; gap: 1.55rem; padding: 0 1rem 2.2rem; }
   }
