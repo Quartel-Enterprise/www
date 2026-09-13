@@ -12,6 +12,31 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const siteURL = new URL('/', Astro.site);
+const organizationId = new URL('#organization', siteURL).href;
+const websiteId = new URL('#website', siteURL).href;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      url: siteURL.href,
+      name: 'Quare Software',
+      inLanguage: 'pt-BR',
+      publisher: { '@id': organizationId },
+    },
+    {
+      '@type': 'Organization',
+      '@id': organizationId,
+      url: siteURL.href,
+      name: 'Quare Software',
+      description,
+      logo: new URL('/quare-logo-512x512.png', siteURL).href,
+      sameAs: ['https://www.linkedin.com/company/quare-software'],
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -35,6 +60,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)}></script>
     <title>{title}</title>
   </head>
   <body id="inicio">
