@@ -6,6 +6,7 @@ const products = [
     id: 'bora', number: '01', name: 'Bora Rachar', type: 'Contas compartilhadas',
     statement: 'A conta é de todos.|A organização também.',
     description: 'Divida despesas e acompanhe a parte de cada pessoa.', action: 'Conhecer o Bora Rachar',
+    href: 'https://borarachar.com',
     dialogDescription: 'Organize a divisão das contas sem perder de vista quem precisa pagar o quê.',
     features: 'Divida despesas de casa, mercado e restaurante.|Consulte os métodos de pagamento definidos pelo criador da conta.|Acompanhe a parte de cada participante.',
     availability: 'O link para acessar o Bora Rachar ainda não está disponível nesta página.', open: true,
@@ -14,6 +15,7 @@ const products = [
     id: 'bible', number: '02', name: 'Bible Planner', type: 'Planejamento bíblico',
     statement: 'Uma leitura por vez.|No seu ritmo.',
     description: 'Planeje sua leitura da Bíblia e acompanhe seu progresso.', action: 'Conhecer o Bible Planner',
+    href: 'https://www.bibleplanner.app/',
     dialogDescription: 'Um planner para organizar a leitura da Bíblia e acompanhar sua jornada.',
     features: 'Planeje sua leitura de acordo com o seu ritmo.|Acompanhe os capítulos lidos.|Organize sua rotina de leitura.',
     availability: 'O link para acessar o Bible Planner ainda não está disponível nesta página.', open: false,
@@ -22,6 +24,7 @@ const products = [
     id: 'suple', number: '03', name: 'Suple Market', type: 'Em desenvolvimento',
     statement: 'Compare primeiro.|Escolha com clareza.',
     description: 'Suplementos, marcas e lojas em uma mesma comparação.', action: 'Conhecer o projeto',
+    href: null,
     dialogDescription: 'Um comparador de suplementos para ajudar você a avaliar as opções antes de escolher.',
     features: 'Compare suplementos e marcas.|Consulte opções em diferentes lojas.|Avalie o custo-benefício lado a lado.',
     availability: 'O Suple Market está em desenvolvimento. O acesso será disponibilizado no lançamento.', open: false,
@@ -54,11 +57,19 @@ const products = [
                   {product.statement.split('|').map((line) => <>{line}<br /></>)}
                 </p>
                 <p class="mb-7 max-w-[31ch] text-sm leading-[1.65] text-muted">{product.description}</p>
-                <button
-                  class="button button--secondary product-action" type="button" aria-haspopup="dialog"
-                  data-name={product.name} data-category={product.type} data-description={product.dialogDescription}
-                  data-features={product.features} data-availability={product.availability}
-                >{product.action} <span aria-hidden="true">→</span></button>
+                {
+                  product.href ? (
+                    <a class="button button--secondary" href={product.href} target="_blank" rel="noopener noreferrer">
+                      {product.action} <span aria-hidden="true">↗</span>
+                    </a>
+                  ) : (
+                    <button
+                      class="button button--secondary product-action" type="button" aria-haspopup="dialog"
+                      data-name={product.name} data-category={product.type} data-description={product.dialogDescription}
+                      data-features={product.features} data-availability={product.availability}
+                    >{product.action} <span aria-hidden="true">→</span></button>
+                  )
+                }
               </div>
               <ProductDemo product={product.id} />
             </div>
