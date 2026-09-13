@@ -91,6 +91,10 @@
         return fract(sin(dot(p, vec2(127.1, 311.7))) * 137.345);
       }
 
+      float interleavedGradientNoise(vec2 pixel) {
+        return fract(52.9829189 * fract(dot(pixel, vec2(.06711056, .00583715))));
+      }
+
       float noise(vec2 p) {
         vec2 i = floor(p);
         vec2 f = fract(p);
@@ -119,7 +123,6 @@
         vec2 p = (uv - .5) * vec2(u_resolution.x / u_resolution.y, 1.) * 2.;
         vec2 maskUv = vec2(uv.x, 1. - uv.y);
         vec2 ellipse = (maskUv - vec2(.5, u_focus_y)) / vec2(.50, .54);
-        float atmosphereMask = 1. - smoothstep(.10, 1., length(ellipse));
         vec2 warp = vec2(
           fbm(p * .9 + vec2(t * .22, -t * .18)),
           fbm(p * .9 + vec2(-t * .19, t * .21) + 4.2)
@@ -127,13 +130,15 @@
         float flowA = fbm(p * 1.65 + warp * 2. + vec2(t * .14, -t * .12));
         float flowB = fbm(vec2(-p.x, p.y) * 1.65 + warp.yx * 2. + vec2(-t * .13, t * .11) + 6.7);
         float field = (flowA + flowB) * .5;
+        float maskDistance = length(ellipse) + (field - .5) * .025;
+        float atmosphereMask = 1. - smoothstep(.10, 1., maskDistance);
         float body = smoothstep(.25, .68, field);
         float fold = exp(-pow((field - .48) * 17., 2.));
         float hue = .5 + .26 * sin(p.x * 1.65 + .65 * sin(p.y * 1.4 + t * .08));
         vec3 tint = mix(u_cyan, u_violet, hue);
         float density = .11 + body * .14 + fold * .08;
         vec3 color = mix(u_bg, tint, density);
-        float dither = (hash(gl_FragCoord.xy) - .5) / 255.;
+        float dither = (interleavedGradientNoise(gl_FragCoord.xy) - .5) * (2. / 255.);
         float alpha = clamp(atmosphereMask + dither, 0., 1.);
         gl_FragColor = vec4(color + vec3(dither), alpha);
       }
