@@ -6,7 +6,7 @@ import Brand from './Brand.astro';
   <div class="mx-auto flex w-full max-w-[77.5rem] flex-wrap items-center justify-between gap-4">
     <div class="footer-brand-group">
       <a class="footer-logo rounded-sm" href="#inicio" aria-label="Voltar ao início"><Brand footer /></a>
-      <span class="footer-brand-separator" aria-hidden="true"></span>
+      <span class="footer-brand-separator" aria-hidden="true">|</span>
       <a
         class="footer-social rounded-sm"
         href="https://www.linkedin.com/company/quare-software"
@@ -27,11 +27,11 @@ import Brand from './Brand.astro';
 </footer>
 
 <style>
-  .footer-brand-group { display: flex; align-items: center; gap: .9rem; }
+  .footer-brand-group { display: inline-flex; align-items: center; gap: .55rem; }
   .footer-logo { display: grid; width: max-content; place-items: center; }
-  .footer-brand-separator { width: 1px; height: 1.5rem; background: color-mix(in srgb, var(--color-muted) 40%, transparent); }
-  .footer-social { display: grid; width: 2rem; height: 2rem; place-items: center; color: var(--color-muted); transition: color 180ms ease, background-color 180ms ease; }
-  .footer-social:hover { color: var(--color-paper); background: color-mix(in srgb, var(--color-paper) 7%, transparent); }
+  .footer-brand-separator { color: color-mix(in srgb, var(--color-muted) 55%, transparent); font-size: 1rem; line-height: 1; }
+  .footer-social { display: inline-grid; width: 1.2rem; height: 1.2rem; place-items: center; color: var(--color-muted); transition: color 180ms ease; }
+  .footer-social:hover { color: var(--color-paper); }
   .footer-social:focus-visible { color: var(--color-paper); outline: 1px solid currentColor; outline-offset: 3px; }
-  .footer-social svg { width: 1.15rem; height: 1.15rem; }
+  .footer-social svg { width: 1rem; height: 1rem; }
 </style>
