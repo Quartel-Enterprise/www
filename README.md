@@ -1,6 +1,6 @@
 # Quare Software Landing Page
 
-Landing page da Quare Software construída com Astro, TypeScript e Tailwind CSS. O projeto usa renderização sob demanda no servidor com o adaptador Node em modo standalone.
+Landing page da Quare Software construída com Astro, TypeScript e Tailwind CSS. O projeto é inteiramente prerenderizado no build para distribuição direta por CDN.
 
 ## Requisitos
 
@@ -21,10 +21,10 @@ O servidor de desenvolvimento abre em `http://localhost:4321`.
 ```bash
 npm run check
 npm run build
-npm start
+npm run preview
 ```
 
-O comando `build` executa a análise estática do Astro e gera o servidor em `dist/server/entry.mjs`. O comando `start` executa esse artefato em produção.
+O comando `build` executa a análise estática do Astro e gera os arquivos prontos para publicação em `dist/`. Configure o serviço de hospedagem para publicar essa pasta.
 
 ## Estrutura
 
@@ -36,4 +36,4 @@ src/
 └── styles/       Design tokens e base do Tailwind
 ```
 
-A página entrega todo o conteúdo no HTML inicial. O JavaScript no cliente é usado para o shader WebGL progressivo do hero, o acordeão de produtos, as prévias interativas e o diálogo de detalhes. Navegadores sem WebGL recebem automaticamente a atmosfera em CSS.
+A página entrega todo o conteúdo no HTML inicial prerenderizado. O JavaScript no cliente é usado para o shader WebGL progressivo do hero, o acordeão de produtos, as prévias interativas e o diálogo de detalhes. Navegadores sem WebGL recebem automaticamente a atmosfera em CSS.
