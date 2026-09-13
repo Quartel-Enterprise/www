@@ -7,27 +7,21 @@ const products = [
     statement: 'A conta é de todos.|A organização também.',
     description: 'Divida despesas e acompanhe a parte de cada pessoa.', action: 'Conhecer o Bora Rachar',
     href: 'https://borarachar.com',
-    dialogDescription: 'Organize a divisão das contas sem perder de vista quem precisa pagar o quê.',
-    features: 'Divida despesas de casa, mercado e restaurante.|Consulte os métodos de pagamento definidos pelo criador da conta.|Acompanhe a parte de cada participante.',
-    availability: 'O link para acessar o Bora Rachar ainda não está disponível nesta página.', open: true,
+    open: true,
   },
   {
     id: 'bible', number: '02', name: 'Bible Planner', type: 'Planejamento bíblico',
     statement: 'Uma leitura por vez.|No seu ritmo.',
     description: 'Planeje sua leitura da Bíblia e acompanhe seu progresso.', action: 'Conhecer o Bible Planner',
     href: 'https://www.bibleplanner.app/',
-    dialogDescription: 'Um planner para organizar a leitura da Bíblia e acompanhar sua jornada.',
-    features: 'Planeje sua leitura de acordo com o seu ritmo.|Acompanhe os capítulos lidos.|Organize sua rotina de leitura.',
-    availability: 'O link para acessar o Bible Planner ainda não está disponível nesta página.', open: false,
+    open: false,
   },
   {
     id: 'suple', number: '03', name: 'Suple Market', type: 'Em desenvolvimento',
     statement: 'Compare primeiro.|Escolha com clareza.',
-    description: 'Suplementos, marcas e lojas em uma mesma comparação.', action: 'Conhecer o projeto',
+    description: 'Suplementos, marcas e lojas em uma mesma comparação.', action: 'Em breve',
     href: null,
-    dialogDescription: 'Um comparador de suplementos para ajudar você a avaliar as opções antes de escolher.',
-    features: 'Compare suplementos e marcas.|Consulte opções em diferentes lojas.|Avalie o custo-benefício lado a lado.',
-    availability: 'O Suple Market está em desenvolvimento. O acesso será disponibilizado no lançamento.', open: false,
+    open: false,
   },
 ] as const;
 ---
@@ -64,10 +58,11 @@ const products = [
                     </a>
                   ) : (
                     <button
-                      class="button button--secondary product-action" type="button" aria-haspopup="dialog"
-                      data-name={product.name} data-category={product.type} data-description={product.dialogDescription}
-                      data-features={product.features} data-availability={product.availability}
-                    >{product.action} <span aria-hidden="true">→</span></button>
+                      class="button button--secondary product-action--disabled"
+                      type="button"
+                      disabled
+                      title="Suple Market está em desenvolvimento"
+                    >{product.action} <span aria-hidden="true">○</span></button>
                   )
                 }
               </div>
@@ -80,19 +75,7 @@ const products = [
   </div>
 </section>
 
-<dialog id="product-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
-  <div class="mb-5 flex items-center justify-between gap-5">
-    <p id="dialog-category" class="font-mono text-[.68rem] uppercase tracking-[.13em] text-muted">Produto Quare</p>
-    <button class="dialog-close" type="button" aria-label="Fechar detalhes">×</button>
-  </div>
-  <h2 id="dialog-title" class="font-display text-[clamp(2.25rem,5vw,3rem)] tracking-[-.035em]">Produto</h2>
-  <p id="dialog-description" class="mt-4 text-muted"></p>
-  <ul id="dialog-features" class="my-6 list-disc space-y-2 pl-5 text-muted"></ul>
-  <p id="dialog-availability" class="border-t border-line pt-5 text-muted"></p>
-</dialog>
-
 <script>
-  const list = document.querySelector<HTMLElement>('[data-product-list]');
   const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('.entry-toggle'));
 
   const setEntryState = (toggle: HTMLButtonElement, expanded: boolean) => {
@@ -172,39 +155,6 @@ const products = [
   };
   unitSelect?.addEventListener('change', updateComparison);
 
-  const dialog = document.querySelector<HTMLDialogElement>('#product-dialog');
-  const closeDialog = document.querySelector<HTMLButtonElement>('.dialog-close');
-  let dialogOpener: HTMLButtonElement | null = null;
-  list?.addEventListener('click', (event) => {
-    const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('.product-action') : null;
-    if (!target || !dialog) return;
-    dialogOpener = target;
-    const title = dialog.querySelector<HTMLElement>('#dialog-title');
-    const category = dialog.querySelector<HTMLElement>('#dialog-category');
-    const description = dialog.querySelector<HTMLElement>('#dialog-description');
-    const features = dialog.querySelector<HTMLUListElement>('#dialog-features');
-    const availability = dialog.querySelector<HTMLElement>('#dialog-availability');
-    if (title) title.textContent = target.dataset.name ?? '';
-    if (category) category.textContent = target.dataset.category ?? '';
-    if (description) description.textContent = target.dataset.description ?? '';
-    if (availability) availability.textContent = target.dataset.availability ?? '';
-    if (features) {
-      const items = (target.dataset.features ?? '').split('|').filter(Boolean);
-      features.replaceChildren(...items.map((text) => Object.assign(document.createElement('li'), { textContent: text })));
-    }
-    dialog.showModal();
-    document.body.classList.add('dialog-open');
-  });
-  closeDialog?.addEventListener('click', () => dialog?.close());
-  dialog?.addEventListener('click', (event) => {
-    if (event.target !== dialog) return;
-    const box = dialog.getBoundingClientRect();
-    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
-  });
-  dialog?.addEventListener('close', () => {
-    document.body.classList.remove('dialog-open');
-    dialogOpener?.focus({ preventScroll: true });
-  });
 </script>
 
 <style>
@@ -217,10 +167,9 @@ const products = [
   .entry-toggle[aria-expanded='true'] .entry-sign svg { transform: rotate(180deg); }
   .entry-content { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.65fr); align-items: center; gap: 3.5rem; padding: 1.6rem 1.25rem 4.1rem 6rem; }
   .entry-content[hidden] { display: none; }
-  dialog { width: min(33.75rem, calc(100% - 2rem)); max-height: calc(100dvh - 2.5rem); overflow: auto; border: 1px solid var(--color-line); border-radius: 1.35rem; background: var(--color-surface); padding: 2rem; color: var(--color-paper); }
-  dialog::backdrop { background: rgb(8 8 14 / .86); backdrop-filter: blur(.5rem); }
-  .dialog-close { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border: 1px solid var(--color-line); border-radius: 50%; background: transparent; color: var(--color-paper); font-size: 1.5rem; }
-  .dialog-close:hover { border-color: var(--color-paper); background: var(--color-page); }
+  button.product-action--disabled { cursor: not-allowed; border-color: var(--color-line); border-style: dashed; background: transparent; color: var(--color-muted); opacity: .48; filter: saturate(.25); }
+  button.product-action--disabled:hover { border-color: var(--color-line); background: transparent; }
+  button.product-action--disabled:hover span { transform: none; }
 
   @media (max-width: 57.5rem) {
     .entry-toggle { grid-template-columns: 2.25rem minmax(0, 1fr) 10.25rem 2.75rem; gap: 1.1rem; }
@@ -230,6 +179,5 @@ const products = [
     .entry-toggle { grid-template-columns: 1.5rem minmax(0, 1fr) 2.25rem; gap: .75rem; padding: 1.55rem 0; }
     .entry-sign { width: 2.25rem; height: 2.25rem; }
     .entry-content { grid-template-columns: 1fr; gap: 1.55rem; padding: 0 0 2.2rem; }
-    dialog { padding: 1.5rem; }
   }
 </style>
