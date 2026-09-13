@@ -15,17 +15,18 @@
 <style>
   .hero__atmosphere {
     --header-overlap: 6rem;
+    --atmosphere-tail: clamp(20rem, 32vw, 28rem);
     position: absolute;
     z-index: -1;
     top: calc(var(--header-overlap) * -1);
     right: 0;
     left: 0;
     width: 100%;
-    height: calc(100% + var(--header-overlap) + 3.75rem);
+    height: calc(100% + var(--header-overlap) + var(--atmosphere-tail));
     overflow: hidden;
     pointer-events: none;
-    -webkit-mask-image: radial-gradient(ellipse 52% 52% at 50% var(--smoke-focus-y, 50%), var(--color-paper) 10%, color-mix(in oklch, var(--color-paper) 85%, transparent) 40%, color-mix(in oklch, var(--color-paper) 35%, transparent) 72%, transparent 100%);
-    mask-image: radial-gradient(ellipse 52% 52% at 50% var(--smoke-focus-y, 50%), var(--color-paper) 10%, color-mix(in oklch, var(--color-paper) 85%, transparent) 40%, color-mix(in oklch, var(--color-paper) 35%, transparent) 72%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 58% 60% at 50% var(--smoke-focus-y, 50%), var(--color-paper) 8%, color-mix(in oklch, var(--color-paper) 88%, transparent) 38%, color-mix(in oklch, var(--color-paper) 45%, transparent) 68%, color-mix(in oklch, var(--color-paper) 12%, transparent) 88%, transparent 100%);
+    mask-image: radial-gradient(ellipse 58% 60% at 50% var(--smoke-focus-y, 50%), var(--color-paper) 8%, color-mix(in oklch, var(--color-paper) 88%, transparent) 38%, color-mix(in oklch, var(--color-paper) 45%, transparent) 68%, color-mix(in oklch, var(--color-paper) 12%, transparent) 88%, transparent 100%);
     mask-mode: alpha;
   }
   .hero__atmosphere::before { position: absolute; inset: 8% 2% 4%; content: ''; background: radial-gradient(ellipse 48% 58% at 29% 55%, rgb(24 79 113 / .48), transparent 68%), radial-gradient(ellipse 47% 55% at 72% 42%, rgb(70 36 123 / .5), transparent 70%), radial-gradient(ellipse 40% 45% at 50% 62%, rgb(22 48 90 / .38), transparent 72%); filter: blur(2.3rem); }
@@ -40,7 +41,7 @@
 
   @media (max-width: 37.5rem) {
     .hero { min-height: clamp(32rem, 72svh, 42rem); padding-top: 4rem; padding-bottom: 6.5rem; }
-    .hero__atmosphere { --header-overlap: 5rem; }
+    .hero__atmosphere { --header-overlap: 5rem; --atmosphere-tail: 14rem; }
   }
 </style>
 
