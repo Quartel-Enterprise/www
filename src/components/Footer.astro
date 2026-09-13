@@ -4,11 +4,34 @@ import Brand from './Brand.astro';
 
 <footer class="px-[var(--page-gutter)] py-8">
   <div class="mx-auto flex w-full max-w-[77.5rem] flex-wrap items-center justify-between gap-4">
-    <a class="footer-logo rounded-sm" href="#inicio" aria-label="Voltar ao início"><Brand footer /></a>
+    <div class="footer-brand-group">
+      <a class="footer-logo rounded-sm" href="#inicio" aria-label="Voltar ao início"><Brand footer /></a>
+      <span class="footer-brand-separator" aria-hidden="true"></span>
+      <a
+        class="footer-social rounded-sm"
+        href="https://www.linkedin.com/company/quare-software"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Quare Software no LinkedIn (abre em uma nova aba)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2ZM8.34 18H5.67V9.4h2.67V18ZM7 8.23a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1ZM18.33 18h-2.66v-4.18c0-1-.02-2.28-1.39-2.28-1.39 0-1.6 1.09-1.6 2.21V18H10V9.4h2.56v1.18h.04c.35-.68 1.22-1.39 2.52-1.39 2.7 0 3.2 1.78 3.2 4.09V18Z"
+          ></path>
+        </svg>
+      </a>
+    </div>
     <small class="font-mono text-[.68rem] text-muted">© {new Date().getFullYear()} Quare Software</small>
   </div>
 </footer>
 
 <style>
+  .footer-brand-group { display: flex; align-items: center; gap: .9rem; }
   .footer-logo { display: grid; width: max-content; place-items: center; }
+  .footer-brand-separator { width: 1px; height: 1.5rem; background: color-mix(in srgb, var(--color-muted) 40%, transparent); }
+  .footer-social { display: grid; width: 2rem; height: 2rem; place-items: center; color: var(--color-muted); transition: color 180ms ease, background-color 180ms ease; }
+  .footer-social:hover { color: var(--color-paper); background: color-mix(in srgb, var(--color-paper) 7%, transparent); }
+  .footer-social:focus-visible { color: var(--color-paper); outline: 1px solid currentColor; outline-offset: 3px; }
+  .footer-social svg { width: 1.15rem; height: 1.15rem; }
 </style>
